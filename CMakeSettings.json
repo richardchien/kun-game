@@ -1,0 +1,31 @@
+{
+  "environments": [
+    {
+      "MSVC_TOOLSET": "v141"
+    }
+  ],
+  "configurations": [
+    {
+      "name": "Debug",
+      "generator": "Visual Studio 15 2017",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "cmakeCommandArgs": "-T ${env.MSVC_TOOLSET}",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": []
+    },
+    {
+      "name": "Release",
+      "generator": "Visual Studio 15 2017",
+      "configurationType": "Release",
+      "inheritEnvironments": [ "msvc_x86" ],
+      "buildRoot": "${projectDir}\\build\\${name}",
+      "cmakeCommandArgs": "-T ${env.MSVC_TOOLSET}",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": []
+    }
+  ]
+}
