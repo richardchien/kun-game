@@ -8,14 +8,16 @@ namespace kun::engine {
         Canvas(Screen &screen) : screen_(screen) {}
 
         Screen &get_screen() const { return screen_; }
+        Rect get_rect() const { return screen_.get_boundary(); }
+        Size get_size() const { return screen_.get_size(); }
 
-        Canvas &fill_background_with_color(const Color color) {
-            screen_.fill_bg_color(color);
+        Canvas &fill_background_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
+            screen_.fill_bg_color(color, rect);
             return *this;
         }
 
-        Canvas &fill_foreground_with_color(const Color color) {
-            screen_.fill_fg_color(color);
+        Canvas &fill_foreground_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
+            screen_.fill_fg_color(color, rect);
             return *this;
         }
 
@@ -26,6 +28,19 @@ namespace kun::engine {
 
         Canvas &set_foreground_color(const Color color) {
             screen_.set_fg_color(color);
+            return *this;
+        }
+
+        Canvas &fill_and_set_background_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
+            return fill_background_color(color, rect).set_background_color(color);
+        }
+
+        Canvas &fill_and_foreground_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
+            return fill_foreground_color(color, rect).set_foreground_color(color);
+        }
+
+        Canvas &clear(const Rect &rect = {-1, -1, -1, -1}) {
+            screen_.clear(rect);
             return *this;
         }
 
@@ -53,79 +68,134 @@ namespace kun::engine {
             Aligning aligning = 0;
             Margin margin;
 
-            Attribute &set_aligning(const Aligning aligning) {
+            Attribute set_aligning(const Aligning aligning) {
                 this->aligning = aligning;
                 return *this;
             }
 
-            Attribute &add_aligning(const Aligning aligning) {
+            Attribute add_aligning(const Aligning aligning) {
                 this->aligning |= aligning;
                 return *this;
             }
 
-            Attribute &set_margin(const Margin &margin) {
+            Attribute set_margin(const Margin &margin) {
                 this->margin = margin;
                 return *this;
             }
 
-            Attribute &set_margin_top(const Int margin_top) {
+            Attribute set_margin_top(const Int margin_top) {
                 this->margin.top = margin_top;
                 return *this;
             }
 
-            Attribute &set_margin_right(const Int margin_right) {
+            Attribute set_margin_right(const Int margin_right) {
                 this->margin.right = margin_right;
                 return *this;
             }
 
-            Attribute &set_margin_bottom(const Int margin_bottom) {
+            Attribute set_margin_bottom(const Int margin_bottom) {
                 this->margin.bottom = margin_bottom;
                 return *this;
             }
 
-            Attribute &set_margin_left(const Int margin_left) {
+            Attribute set_margin_left(const Int margin_left) {
                 this->margin.left = margin_left;
                 return *this;
             }
         };
 
-        Canvas &print_text(const std::string &text, const Attribute &attr = Attribute()) {
-            const auto screen_rect = screen_.get_boundary();
-            const Rect boundary(screen_rect.left() + attr.margin.left,
-                                screen_rect.top() + attr.margin.top,
-                                screen_rect.right() - attr.margin.right,
-                                screen_rect.bottom() - attr.margin.bottom);
-
+        Canvas &draw_text(const std::string &text, const Attribute &attr = Attribute()) {
             const Size size((text.size() % 2 == 0 ? text.size() : text.size() + 1) / 2, 1);
+            screen_.write(get_calculated_rect(size, attr).top_left(), text);
+            return *this;
+        }
+
+        Canvas &draw_border(const Margin &margin, const Int width = 1, const char vertical_ch = '|',
+                            const char horizontal_ch = '-', const char corner_ch = '+') {
+            const auto margined_rect = get_margined_rect(margin);
+            const Rect inner_rect(margined_rect.left() + width,
+                                  margined_rect.top() + width,
+                                  margined_rect.right() - width,
+                                  margined_rect.bottom() - width);
+
+            const auto dwidth = width * 2;
+
+            // 打印上边界
+            const auto top_bottom_border = std::string(width, corner_ch)
+                                           + std::string(margined_rect.width() * 2 - width * 2, horizontal_ch)
+                                           + std::string(width, corner_ch);
+            for (auto i = 0; i < width; i++) {
+                draw_text(top_bottom_border,
+                          Attribute()
+                              .set_margin(margin)
+                              .set_margin_top(margin.top + i)
+                              .set_aligning(Alignings::TOP | Alignings::LEFT));
+            }
+
+            // 打印左右边界
+            const auto left_border = std::string(width, vertical_ch);
+            const auto right_border = left_border.size() % 2 == 0 ? left_border : " " + left_border;
+            for (auto y = inner_rect.top(); y < inner_rect.bottom_out(); y++) {
+                draw_text(
+                    left_border,
+                    Attribute().set_margin(margin).set_margin_top(y).set_aligning(Alignings::TOP | Alignings::LEFT));
+                draw_text(
+                    right_border,
+                    Attribute().set_margin(margin).set_margin_top(y).set_aligning(Alignings::TOP | Alignings::RIGHT));
+            }
+
+            // 打印下边界
+            for (auto i = width - 1; i >= 0; i--) {
+                draw_text(top_bottom_border,
+                          Attribute()
+                              .set_margin(margin)
+                              .set_margin_bottom(margin.bottom + i)
+                              .set_aligning(Alignings::BOTTOM | Alignings::LEFT));
+            }
+
+            return *this;
+        }
+
+        Rect get_calculated_rect(const Size &size, const Attribute &attr) const {
+            const auto margined_rect = get_margined_rect(attr.margin);
+
             Point pos;
 
             if (attr.aligning & Alignings::TOP && attr.aligning & Alignings::BOTTOM) {
                 // 垂直居中
-                pos.y = boundary.top() + (boundary.height() - size.height) / 2;
+                pos.y = margined_rect.top() + (margined_rect.height() - size.height) / 2;
             } else if (attr.aligning & Alignings::BOTTOM) {
                 // 底部对齐
-                pos.y = boundary.bottom() - size.height + 1;
+                pos.y = margined_rect.bottom() - size.height + 1;
             } else {
                 // 顶部对齐
-                pos.y = boundary.top();
+                pos.y = margined_rect.top();
             }
 
             if (attr.aligning & Alignings::LEFT && attr.aligning & Alignings::RIGHT) {
                 // 水平居中
-                pos.x = boundary.left() + (boundary.width() - size.width) / 2;
+                pos.x = margined_rect.left() + (margined_rect.width() - size.width) / 2;
             } else if (attr.aligning & Alignings::RIGHT) {
                 // 右对齐
-                pos.x = boundary.right() - size.width + 1;
+                pos.x = margined_rect.right() - size.width + 1;
             } else {
                 // 左对齐
-                pos.x = boundary.left();
+                pos.x = margined_rect.left();
             }
 
-            screen_.write(pos, text);
-            return *this;
+            return Rect(pos, size);
         }
 
     private:
         Screen &screen_;
+
+        Rect get_margined_rect(const Margin &margin) const {
+            const auto rect = get_rect();
+            const Rect margined_rect(rect.left() + margin.left,
+                                     rect.top() + margin.top,
+                                     rect.right() - margin.right,
+                                     rect.bottom() - margin.bottom);
+            return margined_rect;
+        }
     };
 } // namespace kun::engine

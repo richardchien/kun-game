@@ -85,15 +85,24 @@ namespace kun::engine {
 
         Size get_size() const {
             const auto w = get_buffer_info().srWindow;
-            return {w.Right / 2 /* 用户所看到的宽度是控制台实际宽度的一半 */, w.Bottom};
+            return {(w.Right + 1) / 2 /* 用户所看到的宽度是控制台实际宽度的一半 */, w.Bottom + 1};
         }
 
         Rect get_boundary() const { return Rect(Point(0, 0), get_size()); }
 
-        Screen &clear() {
-            const auto size = get_buffer_info().dwSize;
+        Screen &clear(Rect rect = Rect(-1, -1, -1, -1)) {
+            if (rect == Rect(-1, -1, -1, -1)) {
+                rect = Rect({0, 0}, get_size());
+            }
+
             DWORD num;
-            FillConsoleOutputCharacterA(handle_, ' ', size.X * size.Y, COORD{0, 0}, &num);
+            for (auto y = rect.top(); y <= rect.bottom(); y++) {
+                FillConsoleOutputCharacterA(handle_,
+                                            ' ',
+                                            rect.width() * 2 /* 控制台里的实际宽度是字符数的两倍 */,
+                                            COORD{rect.left() * 2, y},
+                                            &num);
+            }
             return *this;
         }
 

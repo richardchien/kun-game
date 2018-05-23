@@ -32,7 +32,7 @@ namespace kun::engine {
         Rect() = default;
         Rect(const Point &p1, const Point &p2) : Rect(p1.x, p1.y, p2.x, p2.y) {}
         Rect(const Point &origin, const Size &size)
-            : Rect(origin.x, origin.y, origin.x + size.width, origin.y + size.height) {}
+            : Rect(origin.x, origin.y, origin.x + size.width - 1, origin.y + size.height - 1) {}
 
         Rect(const Int x1, const Int y1, const Int x2, const Int y2) {
             top_left_.x = min(x1, x2);
@@ -43,27 +43,39 @@ namespace kun::engine {
 
         Int left() const { return top_left_.x; }
         Int right() const { return bottom_right_.x; }
+        Int right_out() const { return bottom_right_.x + 1; }
         Int top() const { return top_left_.y; }
         Int bottom() const { return bottom_right_.y; }
+        Int bottom_out() const { return bottom_right_.y + 1; }
 
-        Int width() const { return right() - left() + 1; }
-        Int height() const { return bottom() - top() + 1; }
+        Int width() const { return right_out() - left(); }
+        Int height() const { return bottom_out() - top(); }
         Size size() const { return Size(width(), height()); }
         Int area() const { return width() * height(); }
 
         Point top_left() const { return top_left_; }
         Point top_right() const { return Point(right(), top()); }
+        Point top_right_out() const { return Point(right_out(), top()); }
         Point bottom_left() const { return Point(left(), bottom()); }
+        Point bottom_left_out() const { return Point(left(), bottom_out()); }
         Point bottom_right() const { return bottom_right_; }
+        Point bottom_right_out() const { return Point(right_out(), bottom_out()); }
 
         Rect center_rect() const {
             return Rect(Point((left() + right()) / 2, (top() + bottom()) / 2),
-                        Point((left() + right() + 1) / 2, (top() + bottom() + 1) / 2));
+                        Point((left() + right_out()) / 2, (top() + bottom_out()) / 2));
         }
-        Point center() const { return center_rect().bottom_right(); }
+        Point center() const { return center_rect().top_left(); }
 
         bool operator==(const Rect &other) const {
             return top_left_ == other.top_left_ && bottom_right_ == other.bottom_right_;
+        }
+
+        Rect expanded(const Int new_width, const Int new_height) const {
+            const auto width_diff = new_width - width();
+            const auto height_diff = new_height - height();
+            return Rect(
+                left() - width_diff / 2, top() - height_diff / 2, right() + width_diff / 2, bottom() + height_diff / 2);
         }
 
     private:
