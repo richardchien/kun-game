@@ -80,7 +80,7 @@ namespace kun::core {
             case Type::DAO_JING_KUN:
                 return "µÀ¾³öï";
             case Type::KUN_WANG:
-                return "öïÍõ";
+                return "öï¾¨÷Š";
             default:
                 return "";
             }
