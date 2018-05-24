@@ -1,8 +1,11 @@
 #pragma once
 
+#include <functional>
+
 #include "./screen.h"
 
 namespace kun::engine {
+    // 对 Screen 类做了一层封装，提供更便捷的接口，包括输出时的对齐和边距设置
     class Canvas {
     public:
         Canvas(Screen &screen) : screen_(screen) {}
@@ -11,38 +14,35 @@ namespace kun::engine {
         Rect get_rect() const { return screen_.get_boundary(); }
         Size get_size() const { return screen_.get_size(); }
 
-        Canvas &fill_background_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
+        void fill_background_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
             screen_.fill_bg_color(color, rect);
-            return *this;
         }
 
-        Canvas &fill_foreground_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
+        void fill_foreground_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
             screen_.fill_fg_color(color, rect);
-            return *this;
         }
 
-        Canvas &set_background_color(const Color color) {
-            screen_.set_bg_color(color);
-            return *this;
+        void fill_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) { screen_.fill_color(color, rect); }
+
+        void set_background_color(const Color color) { screen_.set_bg_color(color); }
+        void set_foreground_color(const Color color) { screen_.set_fg_color(color); }
+        void set_color(const Color color) { screen_.set_color(color); }
+
+        Color get_background_color() const { return (get_color() & 0xF0) >> 4; }
+        Color get_foreground_color() const { return get_color() & 0x0F; }
+        Color get_color() const { return screen_.get_color(); }
+
+        void fill_and_set_background_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
+            fill_background_color(color, rect);
+            set_background_color(color);
         }
 
-        Canvas &set_foreground_color(const Color color) {
-            screen_.set_fg_color(color);
-            return *this;
+        void fill_and_set_foreground_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
+            fill_foreground_color(color, rect);
+            set_foreground_color(color);
         }
 
-        Canvas &fill_and_set_background_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
-            return fill_background_color(color, rect).set_background_color(color);
-        }
-
-        Canvas &fill_and_foreground_color(const Color color, const Rect &rect = Rect(-1, -1, -1, -1)) {
-            return fill_foreground_color(color, rect).set_foreground_color(color);
-        }
-
-        Canvas &clear(const Rect &rect = {-1, -1, -1, -1}) {
-            screen_.clear(rect);
-            return *this;
-        }
+        void clear(const Rect &rect = {-1, -1, -1, -1}) { screen_.clear(rect); }
 
         using Aligning = uint8_t;
         struct Alignings {
@@ -104,14 +104,43 @@ namespace kun::engine {
             }
         };
 
-        Canvas &draw_text(const std::string &text, const Attribute &attr = Attribute()) {
-            const Size size((text.size() % 2 == 0 ? text.size() : text.size() + 1) / 2, 1);
-            screen_.write(get_calculated_rect(size, attr).top_left(), text);
-            return *this;
+        Rect get_calculated_rect(const Size &size, const Attribute &attr) const {
+            const auto margined_rect = get_margined_rect(attr.margin);
+
+            Point pos;
+
+            if (attr.aligning & Alignings::TOP && attr.aligning & Alignings::BOTTOM) {
+                // 垂直居中
+                pos.y = margined_rect.top() + (margined_rect.height() - size.height) / 2;
+            } else if (attr.aligning & Alignings::BOTTOM) {
+                // 底部对齐
+                pos.y = margined_rect.bottom() - size.height + 1;
+            } else {
+                // 顶部对齐
+                pos.y = margined_rect.top();
+            }
+
+            if (attr.aligning & Alignings::LEFT && attr.aligning & Alignings::RIGHT) {
+                // 水平居中
+                pos.x = margined_rect.left() + (margined_rect.width() - size.width) / 2;
+            } else if (attr.aligning & Alignings::RIGHT) {
+                // 右对齐
+                pos.x = margined_rect.right() - size.width + 1;
+            } else {
+                // 左对齐
+                pos.x = margined_rect.left();
+            }
+
+            return Rect(pos, size);
         }
 
-        Canvas &draw_border(const Margin &margin, const Int width = 1, const char vertical_ch = '|',
-                            const char horizontal_ch = '-', const char corner_ch = '+') {
+        void draw_text(const std::string &text, const Attribute &attr = Attribute()) {
+            const Size size((text.size() % 2 == 0 ? text.size() : text.size() + 1) / 2, 1);
+            screen_.write(get_calculated_rect(size, attr).top_left(), text);
+        }
+
+        void draw_border(const Margin &margin, const Int width = 1, const char vertical_ch = '|',
+                         const char horizontal_ch = '-', const char corner_ch = '+') {
             const auto margined_rect = get_margined_rect(margin);
             const Rect inner_rect(margined_rect.left() + width,
                                   margined_rect.top() + width,
@@ -152,38 +181,6 @@ namespace kun::engine {
                               .set_margin_bottom(margin.bottom + i)
                               .set_aligning(Alignings::BOTTOM | Alignings::LEFT));
             }
-
-            return *this;
-        }
-
-        Rect get_calculated_rect(const Size &size, const Attribute &attr) const {
-            const auto margined_rect = get_margined_rect(attr.margin);
-
-            Point pos;
-
-            if (attr.aligning & Alignings::TOP && attr.aligning & Alignings::BOTTOM) {
-                // 垂直居中
-                pos.y = margined_rect.top() + (margined_rect.height() - size.height) / 2;
-            } else if (attr.aligning & Alignings::BOTTOM) {
-                // 底部对齐
-                pos.y = margined_rect.bottom() - size.height + 1;
-            } else {
-                // 顶部对齐
-                pos.y = margined_rect.top();
-            }
-
-            if (attr.aligning & Alignings::LEFT && attr.aligning & Alignings::RIGHT) {
-                // 水平居中
-                pos.x = margined_rect.left() + (margined_rect.width() - size.width) / 2;
-            } else if (attr.aligning & Alignings::RIGHT) {
-                // 右对齐
-                pos.x = margined_rect.right() - size.width + 1;
-            } else {
-                // 左对齐
-                pos.x = margined_rect.left();
-            }
-
-            return Rect(pos, size);
         }
 
     private:

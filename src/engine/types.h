@@ -71,9 +71,9 @@ namespace kun::engine {
             return top_left_ == other.top_left_ && bottom_right_ == other.bottom_right_;
         }
 
-        Rect expanded(const Int new_width, const Int new_height) const {
-            const auto width_diff = new_width - width();
-            const auto height_diff = new_height - height();
+        Rect expanded(const Size &new_size) const {
+            const auto width_diff = new_size.width - width();
+            const auto height_diff = new_size.height - height();
             return Rect(
                 left() - width_diff / 2, top() - height_diff / 2, right() + width_diff / 2, bottom() + height_diff / 2);
         }

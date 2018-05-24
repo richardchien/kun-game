@@ -13,7 +13,7 @@ namespace kun {
         Screen screen(GetStdHandle(STD_OUTPUT_HANDLE));
         screen.set_size({23, 35});
 
-        LoadingView view;
+        views::LoadingView view;
         view.display_on(screen);
     }
 } // namespace kun

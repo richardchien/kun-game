@@ -6,6 +6,7 @@
 #include "./screen.h"
 
 namespace kun::engine {
+    // 用于统一游戏各页面的绘制和主循环
     class View {
     public:
         using Attribute = Canvas::Attribute;
@@ -16,18 +17,10 @@ namespace kun::engine {
 
         // 在指定控制台上显示当前 View
         virtual void display_on(Screen &screen) {
-            screen.clear();
-            Canvas canvas(screen);
-            draw(canvas);
-            loop(canvas);
+            canvas_ = std::make_shared<Canvas>(screen);
+            redraw();
+            loop();
         }
-
-    protected:
-        // 绘制 View
-        virtual void draw(Canvas &canvas) {}
-
-        // 进入主循环
-        virtual void loop(Canvas &canvas) {}
 
         static int wait_for_keypress(const int expected_ch = '\0') {
             while (true) {
@@ -37,8 +30,28 @@ namespace kun::engine {
                         return ch;
                     }
                 }
-                Sleep(100);
+                Sleep(20);
             }
+        }
+
+    protected:
+        std::shared_ptr<Canvas> canvas_ = nullptr;
+
+        // 绘制 View
+        virtual void draw() {}
+
+        void redraw() {
+            canvas_->clear();
+            draw();
+        }
+
+        // 主循环
+        virtual void loop() {}
+
+        void jump(View &new_view) {
+			// 显示新页面，进入它的主循环
+			new_view.display_on(canvas_->get_screen());
+            // redraw(); // 从下一个页面返回，重新绘制当前页面
         }
     };
 } // namespace kun::engine
