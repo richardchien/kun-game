@@ -8,11 +8,12 @@ namespace kun::views {
 
     class LoadingView final : public View {
         void draw() override {
-            canvas_->fill_and_set_background_color(Colors::BLACK);
-            canvas_->set_foreground_color(Colors::WHITE);
-            canvas_->draw_border({1, 1, 1, 1}, 2);
-
-            canvas_->set_foreground_color(Colors::CYAN);
+            // canvas_->fill_and_set_background_color(Colors::BLACK);
+            // canvas_->set_foreground_color(Colors::WHITE);
+            // canvas_->draw_border({1, 1, 1, 1}, 2);
+            //
+            // canvas_->set_foreground_color(Colors::CYAN);
+            View::draw();
 
             Int margin_top = 7;
             canvas_->draw_text("欢  迎  来  到",
@@ -70,7 +71,7 @@ namespace kun::views {
                 loading_text_rect.resized({canvas_->get_size().width - 8, loading_text_rect.height()});
             canvas_->get_screen().clear(loading_text_rect);
             canvas_->draw_text("> 按空格继续 <", attr);
-            canvas_->fill_foreground_color(Colors::CYAN | Colors::INTENSITY, loading_text_rect);
+            canvas_->fill_foreground_color(Colors::BLACK, loading_text_rect);
 
             loaded_ = true;
         }

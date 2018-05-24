@@ -20,7 +20,12 @@ namespace kun::views {
 
         std::string text() override { return "遇到敌人，看起来挺厉害的，要不要打？"; }
 
-        std::vector<std::string> menus() override { return {"不要怂，跟他刚！", "溜吧"}; }
+        std::vector<std::string> menus() override {
+            return {
+                "不要怂，跟他刚！",
+                "溜吧",
+            };
+        }
 
         enum MenuItem {
             MENU_ITEM_FIGHT = 0,
@@ -54,22 +59,26 @@ namespace kun::views {
             if (enermy_.attack <= self_.defence) {
                 // 敌人打不动我方，赢了
                 won = true;
-                exp_inc = random_int(5, 10);
+                exp_inc = random_int(5, 30);
             } else if (self_.attack <= enermy_.defence) {
                 // 打不动敌人，输了
                 won = false;
-                exp_inc = random_int(10, 15);
+                exp_inc = random_int(10, 30);
             } else {
                 const auto round_count_enermy = enermy_.hp / (self_.attack - enermy_.defence);
                 const auto round_count_pet = self_.hp / (enermy_.attack - self_.defence);
                 won = round_count_pet >= round_count_enermy;
                 exp_inc =
-                    random_int(max(0.08 * pet_.properties.experience, 15), max(0.25 * pet_.properties.experience, 20));
+                    random_int(max(0.08 * pet_.properties.experience, 15), max(0.25 * pet_.properties.experience, 40));
             }
 
             const auto level_up = pet_.add_exp(exp_inc);
 
-            show_notice(std::string(won ? "赢" : "输") + "了，获得了 " + std::to_string(exp_inc) + " 点经验。");
+            const auto coin_inc = random_int(exp_inc * 5, exp_inc * 15);
+            pet_.properties.coin += coin_inc;
+
+            show_notice(std::string(won ? "赢" : "输") + "了，获得了 " + std::to_string(exp_inc) + " 点经验和 "
+                        + std::to_string(coin_inc) + " 个金币。");
 
             if (won) {
                 // 赢了的情况下，捡掉落装备

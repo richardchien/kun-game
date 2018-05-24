@@ -2,6 +2,7 @@
 
 #include "./battle_view.h"
 #include "./pet_mixin.h"
+#include "./shop_view.h"
 #include "engine/engine.h"
 #include "utils/random.h"
 
@@ -22,15 +23,25 @@ namespace kun::views {
             oss << "血量：" << pet_.properties.hp << endl;
             oss << "攻击：" << pet_.properties.attack << endl;
             oss << "防御：" << pet_.properties.defence << endl;
+            oss << "金币：" << pet_.properties.coin << endl;
             oss << "体力：" << pet_.properties.energy << endl;
             return oss.str();
         }
 
-        std::vector<std::string> menus() override { return {"喂食", "探险", "保存", "保存并返回主菜单"}; }
+        std::vector<std::string> menus() override {
+            return {
+                "喂食",
+                "探险",
+                "商店",
+                "保存游戏",
+                "保存并返回主菜单",
+            };
+        }
 
         enum MenuItem {
             MENU_ITEM_FEED = 0,
             MENU_ITEM_EXPLORE,
+            MENU_ITEM_SHOP,
             MENU_ITEM_SAVE,
             MENU_ITEM_SAVE_AND_RETURN,
         };
@@ -43,6 +54,11 @@ namespace kun::views {
             case MENU_ITEM_EXPLORE:
                 explore();
                 break;
+            case MENU_ITEM_SHOP: {
+                ShopView view;
+                jump(view);
+                break;
+            }
             case MENU_ITEM_SAVE:
                 save_game();
                 break;

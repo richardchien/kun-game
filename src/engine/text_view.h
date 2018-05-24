@@ -12,7 +12,7 @@ namespace kun::engine {
             draw_text();
         }
 
-        void draw_text() { canvas_->draw_text(text(), get_inner_boundary().expanded(-2)); }
+        virtual void draw_text() { canvas_->draw_text(text(), get_inner_boundary().expanded(-2)); }
 
         void loop() override {
             std::function<void(Menu &, int)> on_select_cb = [this](Menu &menu, const int index) {
@@ -21,7 +21,7 @@ namespace kun::engine {
 
             auto menu_vec = menus();
             if (menu_vec.empty()) {
-                menu_vec.push_back("·µ»Ø");
+                menu_vec.emplace_back("·µ»Ø");
                 on_select_cb = [](Menu &menu, const int index) { menu.break_loop(); };
             }
 
@@ -32,8 +32,5 @@ namespace kun::engine {
         virtual std::string text() = 0;
         std::vector<std::string> menus() override { return {}; }
         void on_select(Menu &menu, const int index) override {}
-
-    private:
-
     };
 } // namespace kun::engine

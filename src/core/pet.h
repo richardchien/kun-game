@@ -25,6 +25,7 @@ namespace kun::core {
             int hp = 100;
             int attack = 10;
             int defence = 10;
+            int coin = 0;
             static const int ENERGY_MAX = 100;
             int energy = ENERGY_MAX;
         };
@@ -154,6 +155,7 @@ namespace kun::core {
         props.hp = j.at("hp").get<int>();
         props.attack = j.at("attack").get<int>();
         props.defence = j.at("defence").get<int>();
+        props.coin = j.at("coin").get<int>();
         props.energy = j.at("energy").get<int>();
     }
 
@@ -165,6 +167,7 @@ namespace kun::core {
             {"hp", props.hp},
             {"attack", props.attack},
             {"defence", props.defence},
+            {"coin", props.coin},
             {"energy", props.energy},
         };
     }
@@ -172,6 +175,7 @@ namespace kun::core {
     inline void from_json(const json &j, Pet &pet) {
         pet.name = utils::utf8_to_gbk(j.at("name").get<std::string>().c_str());
         pet.birthtime = j.at("birthtime").get<time_t>();
+        pet.type = j.at("type").get<Pet::Type>();
         pet.properties = j.at("properties").get<Pet::Properties>();
     }
 
