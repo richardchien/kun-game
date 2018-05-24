@@ -19,8 +19,10 @@ namespace kun::engine {
         }
 
         void loop() override {
+            canvas_->get_screen().show_cursor();
             std::string input;
             std::getline(std::cin, input);
+            canvas_->get_screen().hide_cursor();
             on_input(input);
         }
 

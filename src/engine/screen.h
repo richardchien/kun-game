@@ -22,6 +22,22 @@ namespace kun::engine {
 
         HANDLE get_handle() const { return handle_; }
 
+        Screen &hide_cursor() {
+            CONSOLE_CURSOR_INFO cursor_info;
+            GetConsoleCursorInfo(handle_, &cursor_info);
+            cursor_info.bVisible = FALSE;
+            SetConsoleCursorInfo(handle_, &cursor_info);
+            return *this;
+        }
+
+        Screen &show_cursor() {
+            CONSOLE_CURSOR_INFO cursor_info;
+            GetConsoleCursorInfo(handle_, &cursor_info);
+            cursor_info.bVisible = TRUE;
+            SetConsoleCursorInfo(handle_, &cursor_info);
+            return *this;
+        }
+
         Screen &fill_color(const Color color, Rect rect = Rect(-1, -1, -1, -1)) {
             const auto buffer_info = get_buffer_info();
 
@@ -146,12 +162,7 @@ namespace kun::engine {
             const auto color = Colors::combine(Colors::WHITE, Colors::BLACK);
             fill_color(color);
             set_color(color);
-
-            // Òþ²Ø¹â±ê
-            CONSOLE_CURSOR_INFO cursor_info;
-            GetConsoleCursorInfo(handle_, &cursor_info);
-            cursor_info.bVisible = FALSE;
-            SetConsoleCursorInfo(handle_, &cursor_info);
+            hide_cursor();
         }
 
         CONSOLE_SCREEN_BUFFER_INFO get_buffer_info() const {
