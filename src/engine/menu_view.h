@@ -9,15 +9,11 @@ namespace kun::engine {
     // 在整个页面居中显示一个菜单的视图
     class MenuView : public View {
     protected:
-        void draw() override {
-            canvas_->fill_and_set_background_color(Colors::WHITE);
-            canvas_->set_foreground_color(Colors::BLACK);
-            canvas_->draw_border({1, 1, 1, 1}, 2);
-        }
+        void draw() override { View::draw(); }
 
         void loop() override {
             Menu menu(*canvas_, menus(), [this](Menu &menu, const int index) { on_select(menu, index); });
-            menu.show();
+            menu.show(get_inner_boundary().expanded(-2));
         }
 
         virtual std::vector<std::string> menus() = 0;

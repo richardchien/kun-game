@@ -11,7 +11,7 @@ namespace kun {
 
     void start() {
         Screen screen(GetStdHandle(STD_OUTPUT_HANDLE));
-        screen.set_size({23, 35});
+        screen.set_size({22, 35});
 
         views::LoadingView view;
         view.display_on(screen);

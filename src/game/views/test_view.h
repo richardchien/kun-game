@@ -5,8 +5,7 @@
 namespace kun::views {
     using namespace engine;
 
-    class SubView : public MenuView {
-    private:
+    class TestView final : public MenuView {
         std::vector<std::string> menus() override { return {"返回上一级"}; }
 
         enum MenuItem {

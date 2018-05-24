@@ -1,6 +1,9 @@
 {
   "environments": [
     {
+      "VCPKG_ROOT": "C:\\CLI\\vcpkg",
+      "VCPKG_CMAKE": "${env.VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake",
+      "VCPKG_TRIPLET": "x86-windows-static",
       "MSVC_TOOLSET": "v141"
     }
   ],
@@ -14,7 +17,16 @@
       "cmakeCommandArgs": "-T ${env.MSVC_TOOLSET}",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "variables": []
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${env.VCPKG_CMAKE}"
+        },
+        {
+          "name": "VCPKG_TARGET_TRIPLET",
+          "value": "${env.VCPKG_TRIPLET}"
+        }
+      ]
     },
     {
       "name": "Release",
@@ -25,7 +37,16 @@
       "cmakeCommandArgs": "-T ${env.MSVC_TOOLSET}",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "variables": []
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "${env.VCPKG_CMAKE}"
+        },
+        {
+          "name": "VCPKG_TARGET_TRIPLET",
+          "value": "${env.VCPKG_TRIPLET}"
+        }
+      ]
     }
   ]
 }

@@ -7,7 +7,7 @@
 #include "types.h"
 
 namespace kun::engine {
-	// 封装 WinAPI 对控制台的操作，对外提供 C++ 接口
+    // 封装 WinAPI 对控制台的操作，对外提供 C++ 接口
     class Screen {
     public:
         Screen(const HANDLE handle = nullptr) {

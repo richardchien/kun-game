@@ -71,11 +71,15 @@ namespace kun::engine {
             return top_left_ == other.top_left_ && bottom_right_ == other.bottom_right_;
         }
 
-        Rect expanded(const Size &new_size) const {
-            const auto width_diff = new_size.width - width();
-            const auto height_diff = new_size.height - height();
+        Rect expanded(const Int width_diff, const Int height_diff) const {
             return Rect(
                 left() - width_diff / 2, top() - height_diff / 2, right() + width_diff / 2, bottom() + height_diff / 2);
+        }
+
+        Rect expanded(const Int diff) const { return expanded(diff, diff); }
+
+        Rect resized(const Size &new_size) const {
+            return expanded(new_size.width - width(), new_size.height - height());
         }
 
     private:

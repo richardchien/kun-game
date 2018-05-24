@@ -1,6 +1,9 @@
 #pragma once
 
-#include "./types.h"
-#include "./screen.h"
-#include "./view.h"
+#include "./canvas.h"
+#include "./menu.h"
 #include "./menu_view.h"
+#include "./screen.h"
+#include "./text_view.h"
+#include "./types.h"
+#include "./view.h"
