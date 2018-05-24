@@ -1,6 +1,5 @@
 #pragma once
 
-#include "./notice_view.h"
 #include "engine/engine.h"
 
 namespace kun::views {
@@ -19,8 +18,7 @@ namespace kun::views {
         void on_select(Menu &menu, const int index) override {
             switch (index) {
             case MENU_ITEM_I_AM_STUPID: {
-                NoticeView view("那就是你制杖了（");
-                jump(view);
+                show_notice("那就是你制杖了（");
                 break;
             }
             case MENU_ITEM_OH:

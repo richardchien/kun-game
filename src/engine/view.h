@@ -73,5 +73,7 @@ namespace kun::engine {
             // 这里重绘页面之后，on_select 返回，Menu 类会自己重新输出菜单项
             redraw();
         }
+
+        void show_notice(const std::string &notice);
     };
 } // namespace kun::engine

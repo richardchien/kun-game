@@ -4,8 +4,6 @@
 #include "./view.h"
 
 namespace kun::engine {
-    using namespace engine;
-
     // 在整个页面居中显示一个菜单的视图
     class MenuView : public View {
     protected:

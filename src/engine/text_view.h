@@ -4,8 +4,6 @@
 #include "./menu_view.h"
 
 namespace kun::engine {
-    using namespace engine;
-
     // 页面上部分显示文本，下部分显示菜单
     class TextView : public MenuView {
     protected:
@@ -34,5 +32,8 @@ namespace kun::engine {
         virtual std::string text() = 0;
         std::vector<std::string> menus() override { return {}; }
         void on_select(Menu &menu, const int index) override {}
+
+    private:
+
     };
 } // namespace kun::engine

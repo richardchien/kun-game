@@ -53,8 +53,7 @@ namespace kun::views {
                 GameDashboardView view;
                 jump(view);
             } else {
-                NoticeView view("存档加载失败，大概根本就没保存过吧。");
-                jump(view);
+				show_notice("存档加载失败，大概根本就没保存过吧。");
             }
         }
 
@@ -64,8 +63,7 @@ namespace kun::views {
         }
 
         void dev_team() {
-            NoticeView view("俞慧\n钱宇超\n冯瑞\n王雨樵");
-            jump(view);
+			show_notice("俞慧\n钱宇超\n冯瑞\n王雨樵");
         }
     };
 } // namespace kun::views

@@ -2,9 +2,7 @@
 
 #include "engine/engine.h"
 
-namespace kun::views {
-    using namespace engine;
-
+namespace kun::engine {
     class NoticeView final : public TextView {
     public:
         NoticeView(const std::string &text) : text_(text) {}
@@ -13,4 +11,4 @@ namespace kun::views {
     private:
         std::string text_;
     };
-} // namespace kun::views
+} // namespace kun::engine

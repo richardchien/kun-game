@@ -6,8 +6,6 @@
 #include "./view.h"
 
 namespace kun::engine {
-    using namespace engine;
-
     class InputView : public View {
     protected:
         void draw() override {
