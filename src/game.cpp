@@ -1,7 +1,6 @@
 #include "./game.h"
 
-#include "engine/engine.h"
-
+#include "./engine/engine.h"
 #include "./views/loading_view.h"
 
 using namespace std;

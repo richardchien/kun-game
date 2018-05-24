@@ -1,6 +1,8 @@
-#include "game/game.h"
+#include "game.h"
 
 int main() {
     kun::start();
+
+    // system("pause");
     return 0;
 }

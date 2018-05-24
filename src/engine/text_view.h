@@ -11,8 +11,10 @@ namespace kun::engine {
     protected:
         void draw() override {
             MenuView::draw();
-            canvas_->draw_text(text(), get_inner_boundary().expanded(-2));
+            draw_text();
         }
+
+        void draw_text() { canvas_->draw_text(text(), get_inner_boundary().expanded(-2)); }
 
         void loop() override {
             std::function<void(Menu &, int)> on_select_cb = [this](Menu &menu, const int index) {
@@ -31,6 +33,6 @@ namespace kun::engine {
 
         virtual std::string text() = 0;
         std::vector<std::string> menus() override { return {}; }
-        void on_select(Menu &menu, int index) override {}
+        void on_select(Menu &menu, const int index) override {}
     };
 } // namespace kun::engine

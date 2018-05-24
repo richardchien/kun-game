@@ -1,8 +1,7 @@
 #pragma once
 
-#include "engine/engine.h"
-
 #include "./main_view.h"
+#include "engine/engine.h"
 
 namespace kun::views {
     using namespace engine;
@@ -46,7 +45,7 @@ namespace kun::views {
         // 假装在加载
         void load() {
             unsigned long waited_time = 0;
-            const unsigned long total_waited_time = 100; // 加载 5 秒
+            const unsigned long total_waited_time = 5000; // 加载 5 秒
 
             auto loading_flag = 0;
             std::string loading_text(13, '=');

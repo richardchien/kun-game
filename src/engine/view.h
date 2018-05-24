@@ -29,7 +29,7 @@ namespace kun::engine {
                         return ch;
                     }
                 }
-                Sleep(20);
+                Sleep(10);
             }
         }
 

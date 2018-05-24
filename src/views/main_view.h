@@ -1,16 +1,15 @@
 #pragma once
 
-#include "engine/engine.h"
-
 #include "./about_view.h"
-#include "./test_view.h"
+#include "./start_game_view.h"
+#include "engine/engine.h"
 
 namespace kun::views {
     using namespace engine;
 
     class MainView final : public MenuView {
         std::vector<std::string> menus() override {
-            return {"新建游戏", "载入存档", "游戏说明", "开发团队", "退出游戏", "测试"};
+            return {"新建游戏", "载入存档", "游戏说明", "开发团队", "退出游戏"};
         }
 
         enum MenuItem {
@@ -19,7 +18,6 @@ namespace kun::views {
             MENU_ITEM_ABOUT,
             MENU_ITEM_DEV_TEAM,
             MENU_ITEM_EXIT,
-            MENU_IETM_TEST,
         };
 
         void on_select(Menu &menu, const int index) override {
@@ -39,27 +37,34 @@ namespace kun::views {
             case MENU_ITEM_EXIT:
                 exit(0);
                 break;
-            case MENU_IETM_TEST:
-                test();
-                break;
             default:
                 break;
             }
         }
 
-        void start_new_game() {}
+        void start_new_game() {
+            StartGameView view;
+            jump(view);
+        }
 
-        void loaded_saved_game() {}
+        void loaded_saved_game() {
+            if (Game::load_saved()) {
+                // 加载存档成功
+                GameDashboardView view;
+                jump(view);
+            } else {
+                NoticeView view("存档加载失败，大概根本就没保存过吧。");
+                jump(view);
+            }
+        }
 
         void about() {
             AboutView view;
             jump(view);
         }
 
-        void dev_team() {}
-
-        void test() {
-            TestView view;
+        void dev_team() {
+            NoticeView view("俞慧\n钱宇超\n冯瑞\n王雨樵");
             jump(view);
         }
     };
