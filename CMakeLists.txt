@@ -6,7 +6,6 @@ set(CMAKE_CXX_FLAGS "/MP ${CMAKE_CXX_FLAGS}")  # build with object level paralle
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-include(UseStaticCRT)
 include(FindVcpkgIncludeDir)
 
 include_directories(${VCPKG_INCLUDE_DIR})
